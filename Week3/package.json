@@ -1,0 +1,13 @@
+{
+  "name": "smart-task-planner",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "AI-powered task planner using Gemini API",
+  "main": "script.js",
+  "scripts": {
+    "start": "node script.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  }
+}

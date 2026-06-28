@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Task Planner</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Header -->
+    <header class="header">
+      <h1>Smart Task Planner</h1>
+      <p>Describe a goal. AI will break it down into actionable tasks.</p>
+    </header>
+
+    <!-- AI Planner -->
+    <section class="card ai-section">
+      <h2 class="section-title">
+        <span class="badge ai-badge">AI</span>
+        Generate Tasks from a Goal
+      </h2>
+
+      <div class="ai-input-row">
+        <input
+          type="text"
+          id="goalInput"
+          placeholder='e.g. "Plan a trip to Manali" or "Prepare for a job interview"'
+          autocomplete="off"
+        />
+        <button id="generateBtn" class="btn-generate" onclick="generateTasks()">
+          Generate
+        </button>
+      </div>
+
+      <div id="aiError" class="ai-error hidden"></div>
+      <div id="loadingState" class="loading hidden">
+        <div class="spinner"></div>
+        <span>Generating your plan…</span>
+      </div>
+
+      <div id="aiResults" class="ai-results hidden">
+        <p class="results-label">Suggested tasks — click any to add to your list</p>
+        <div id="aiTaskList" class="ai-task-grid"></div>
+      </div>
+    </section>
+
+    <!-- Manual Task Manager -->
+    <section class="card task-section">
+      <h2 class="section-title">Your Tasks</h2>
+
+      <div id="notification" class="notification"></div>
+
+      <form id="taskForm" class="task-form" onsubmit="addTask(event)">
+        <input
+          type="text"
+          id="taskInput"
+          placeholder="Add a task manually…"
+          autocomplete="off"
+        />
+        <button type="submit" class="btn-add">Add</button>
+      </form>
+
+      <div class="task-meta">
+        <span id="taskCount">0 tasks</span>
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all" onclick="setFilter(this)">All</button>
+          <button class="filter-btn" data-filter="active" onclick="setFilter(this)">Active</button>
+          <button class="filter-btn" data-filter="completed" onclick="setFilter(this)">Completed</button>
+        </div>
+      </div>
+
+      <ul id="taskList" class="task-list"></ul>
+      <p id="emptyState" class="empty-state">No tasks yet.</p>
+    </section>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

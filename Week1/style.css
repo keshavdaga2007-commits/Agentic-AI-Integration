@@ -1,0 +1,227 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #f0f2f5;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Layout ─────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  width: 860px;
+  min-height: 520px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Left Panel ─────────────────────────── */
+
+.left-panel {
+  width: 42%;
+  background: #1a1f36;
+  padding: 48px 40px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.left-content {
+  color: #fff;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-bottom: 48px;
+  color: #fff;
+}
+
+.logo span {
+  color: #7c8cf8;
+}
+
+.left-content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 14px;
+  color: #fff;
+}
+
+.left-content p {
+  font-size: 14px;
+  color: #8892b8;
+  line-height: 1.6;
+}
+
+/* ── Right Panel ────────────────────────── */
+
+.right-panel {
+  flex: 1;
+  background: #ffffff;
+  padding: 48px 44px;
+  display: flex;
+  align-items: center;
+}
+
+.form-box {
+  width: 100%;
+}
+
+.form-header {
+  margin-bottom: 32px;
+}
+
+.form-header h1 {
+  font-size: 26px;
+  font-weight: 600;
+  color: #111827;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.form-header p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ── Fields ─────────────────────────────── */
+
+.field {
+  margin-bottom: 20px;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 7px;
+}
+
+.label-row label {
+  margin-bottom: 0;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #111827;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+input::placeholder {
+  color: #c4c9d4;
+}
+
+input:focus {
+  border-color: #4f46e5;
+  background: #fff;
+}
+
+/* ── Forgot ─────────────────────────────── */
+
+.forgot {
+  font-size: 13px;
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgot:hover {
+  text-decoration: underline;
+}
+
+/* ── Button ─────────────────────────────── */
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  background: #4f46e5;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: #4338ca;
+}
+
+/* ── Bottom text ────────────────────────── */
+
+.bottom-text {
+  margin-top: 24px;
+  font-size: 13.5px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.bottom-text a {
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.bottom-text a:hover {
+  text-decoration: underline;
+}
+
+/* ── Responsive ─────────────────────────── */
+
+@media (max-width: 700px) {
+  .wrapper {
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    border-radius: 0;
+  }
+
+  .left-panel {
+    width: 100%;
+    padding: 32px 28px;
+    align-items: flex-start;
+  }
+
+  .left-content h2,
+  .left-content p {
+    display: none;
+  }
+
+  .logo {
+    margin-bottom: 0;
+  }
+
+  .right-panel {
+    padding: 36px 28px;
+  }
+}
