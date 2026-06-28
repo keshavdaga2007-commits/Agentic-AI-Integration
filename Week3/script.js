@@ -1,8 +1,7 @@
 // ─────────────────────────────────────────────────────────
-// Replace with your Gemini API key from https://aistudio.google.com/
-// NEVER commit this key to GitHub — add .env to .gitignore
+
 // ─────────────────────────────────────────────────────────
-const API_KEY = "YOUR_API_KEY_HERE";
+const API_KEY = "AQ.Ab8RN6JC69YTP0gsByJKTHoy8im9f4Z0ZVJq8KPqu3_vv4jqBA";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
 // ── State ──────────────────────────────────────────────────
