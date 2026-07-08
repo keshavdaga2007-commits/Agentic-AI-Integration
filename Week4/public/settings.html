@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">Finance<span>Tracker</span></div>
+      <ul class="nav-list">
+        <li><a href="dashboard.html" class="nav-item"><span class="icon">🏠</span> Dashboard</a></li>
+        <li><a href="add-transaction.html" class="nav-item"><span class="icon">➕</span> Add Transaction</a></li>
+        <li><a href="history.html" class="nav-item"><span class="icon">📜</span> History</a></li>
+        <li><a href="reports.html" class="nav-item"><span class="icon">📊</span> Reports</a></li>
+        <li><a href="assistant.html" class="nav-item"><span class="icon">🤖</span> AI Assistant</a></li>
+        <li><a href="settings.html" class="nav-item active"><span class="icon">⚙️</span> Settings</a></li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <div class="page-header">
+        <h1>Settings</h1>
+        <p>Manage your preferences and data.</p>
+      </div>
+
+      <div class="card" style="max-width: 480px;">
+        <h2 style="font-size:15px; font-weight:600; margin-bottom:16px;">Budget Goal</h2>
+        <div class="field">
+          <label for="budgetInput">Monthly Budget (₹)</label>
+          <input type="number" id="budgetInput" placeholder="e.g. 20000" min="0" />
+        </div>
+        <button class="btn btn-primary" onclick="saveBudget()">Save Budget</button>
+        <p id="budgetMsg" style="display:none; font-size:13px; color:var(--green); margin-top:10px; font-weight:500;">Budget saved.</p>
+      </div>
+
+      <div class="card" style="max-width: 480px;">
+        <h2 style="font-size:15px; font-weight:600; margin-bottom:8px;">Preferences</h2>
+        <div class="switch-row">
+          <div>
+            <div class="switch-label">Dark Mode</div>
+            <div class="switch-desc">Switch to a dark colour theme.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card" style="max-width: 480px; border-color: #fecaca;">
+        <h2 style="font-size:15px; font-weight:600; margin-bottom:6px; color:var(--red);">Danger Zone</h2>
+        <p style="font-size:13px; color:var(--gray-600); margin-bottom:14px;">This will permanently delete all your transactions. This cannot be undone.</p>
+        <button class="btn btn-danger" onclick="handleReset()">Reset All Data</button>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    const settings = getSettings();
+    if (settings.darkMode) document.documentElement.setAttribute("data-theme", "dark");
+
+    document.getElementById("budgetInput").value = settings.budget || "";
+    document.getElementById("darkModeToggle").checked = !!settings.darkMode;
+
+    function saveBudget() {
+      const budget = parseFloat(document.getElementById("budgetInput").value) || 0;
+      const current = getSettings();
+      saveSettings({ ...current, budget });
+
+      const msg = document.getElementById("budgetMsg");
+      msg.style.display = "block";
+      setTimeout(() => { msg.style.display = "none"; }, 2000);
+    }
+
+    function toggleDarkMode() {
+      const isDark = document.getElementById("darkModeToggle").checked;
+      const current = getSettings();
+      saveSettings({ ...current, darkMode: isDark });
+      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    }
+
+    function handleReset() {
+      if (confirm("Are you sure? This will delete ALL transactions permanently.")) {
+        clearTransactions();
+        alert("All data has been reset.");
+        window.location.href = "dashboard.html";
+      }
+    }
+  </script>
+
+</body>
+</html>

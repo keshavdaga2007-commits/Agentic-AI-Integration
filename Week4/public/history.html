@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>History — Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">Finance<span>Tracker</span></div>
+      <ul class="nav-list">
+        <li><a href="dashboard.html" class="nav-item"><span class="icon">🏠</span> Dashboard</a></li>
+        <li><a href="add-transaction.html" class="nav-item"><span class="icon">➕</span> Add Transaction</a></li>
+        <li><a href="history.html" class="nav-item active"><span class="icon">📜</span> History</a></li>
+        <li><a href="reports.html" class="nav-item"><span class="icon">📊</span> Reports</a></li>
+        <li><a href="assistant.html" class="nav-item"><span class="icon">🤖</span> AI Assistant</a></li>
+        <li><a href="settings.html" class="nav-item"><span class="icon">⚙️</span> Settings</a></li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <div class="page-header">
+        <h1>Transaction History</h1>
+        <p>All your recorded income and expenses.</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <button class="type-btn active-income" style="flex:none; padding:7px 14px;" data-filter="all" onclick="setFilter('all', this)">All</button>
+          <button class="type-btn" style="flex:none; padding:7px 14px;" data-filter="income" onclick="setFilter('income', this)">Income</button>
+          <button class="type-btn" style="flex:none; padding:7px 14px;" data-filter="expense" onclick="setFilter('expense', this)">Expenses</button>
+        </div>
+
+        <table class="txn-table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th style="text-align:right;">Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+        <p class="empty-state" id="emptyState" style="display:none;">No transactions found.</p>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    if (getSettings().darkMode) document.documentElement.setAttribute("data-theme", "dark");
+
+    let currentFilter = "all";
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('[data-filter]').forEach(b => {
+        b.classList.remove("active-income", "active-expense");
+      });
+      btn.classList.add(filter === "income" ? "active-income" : filter === "expense" ? "active-expense" : "active-income");
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const cur = getSettings().currency || "₹";
+      let transactions = getTransactions().sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if (currentFilter !== "all") {
+        transactions = transactions.filter(t => t.type === currentFilter);
+      }
+
+      const body = document.getElementById("historyBody");
+      const empty = document.getElementById("emptyState");
+      body.innerHTML = "";
+
+      if (transactions.length === 0) {
+        empty.style.display = "block";
+        return;
+      }
+      empty.style.display = "none";
+
+      transactions.forEach(t => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${escapeHTML(t.description)}</td>
+          <td><span class="badge badge-${t.type}">${escapeHTML(t.category)}</span></td>
+          <td>${t.date}</td>
+          <td style="text-align:right;" class="amount-${t.type}">${t.type === "income" ? "+" : "-"}${cur}${t.amount.toLocaleString("en-IN")}</td>
+          <td style="text-align:right;"><button class="delete-btn" onclick="handleDelete(${t.id})">Delete</button></td>
+        `;
+        body.appendChild(row);
+      });
+    }
+
+    function handleDelete(id) {
+      if (confirm("Delete this transaction? This cannot be undone.")) {
+        deleteTransaction(id);
+        renderHistory();
+      }
+    }
+
+    function escapeHTML(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    renderHistory();
+  </script>
+
+</body>
+</html>

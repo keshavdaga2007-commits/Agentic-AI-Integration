@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Assistant — Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">Finance<span>Tracker</span></div>
+      <ul class="nav-list">
+        <li><a href="dashboard.html" class="nav-item"><span class="icon">🏠</span> Dashboard</a></li>
+        <li><a href="add-transaction.html" class="nav-item"><span class="icon">➕</span> Add Transaction</a></li>
+        <li><a href="history.html" class="nav-item"><span class="icon">📜</span> History</a></li>
+        <li><a href="reports.html" class="nav-item"><span class="icon">📊</span> Reports</a></li>
+        <li><a href="assistant.html" class="nav-item active"><span class="icon">🤖</span> AI Assistant</a></li>
+        <li><a href="settings.html" class="nav-item"><span class="icon">⚙️</span> Settings</a></li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <div class="page-header">
+        <h1>AI Assistant</h1>
+        <p>Ask anything about your finances or general money questions.</p>
+      </div>
+
+      <div class="card">
+        <div class="chat-window" id="chatWindow">
+          <div class="chat-msg ai">Hi! I can see your transaction history and answer questions about your spending, or general finance questions. Try asking "How much did I spend on Food?" or "How can I build an emergency fund?"</div>
+        </div>
+
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Ask a question..." onkeydown="if(event.key==='Enter') sendMessage()" />
+          <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ai.js"></script>
+  <script>
+    if (getSettings().darkMode) document.documentElement.setAttribute("data-theme", "dark");
+
+    const chatWindow = document.getElementById("chatWindow");
+    const chatInput = document.getElementById("chatInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    function addMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.className = `chat-msg ${sender}`;
+      msg.textContent = text;
+      chatWindow.appendChild(msg);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      return msg;
+    }
+
+    async function sendMessage() {
+      const question = chatInput.value.trim();
+      if (!question) return;
+
+      addMessage(question, "user");
+      chatInput.value = "";
+      sendBtn.disabled = true;
+
+      const typingMsg = addMessage("", "ai");
+      typingMsg.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
+
+      const balance = getBalance();
+      const income = getTotalIncome();
+      const expenses = getTotalExpenses();
+      const categoryTotals = getCategoryTotals();
+
+      const contextPrompt = `You are a helpful personal finance assistant inside a finance tracker app.
+Here is the user's current financial data:
+- Balance: ₹${balance}
+- Total Income: ₹${income}
+- Total Expenses: ₹${expenses}
+- Spending by category: ${JSON.stringify(categoryTotals)}
+
+If the user's question relates to their own spending or balance, use the data above to answer specifically.
+If it's a general finance question, answer helpfully and concisely.
+Keep responses short and conversational, under 100 words unless the question needs more detail.
+
+User's question: ${question}`;
+
+      const reply = await askAI(contextPrompt);
+      typingMsg.textContent = reply;
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      sendBtn.disabled = false;
+    }
+  </script>
+
+</body>
+</html>

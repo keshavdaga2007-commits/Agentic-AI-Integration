@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">Finance<span>Tracker</span></div>
+      <ul class="nav-list">
+        <li><a href="dashboard.html" class="nav-item active"><span class="icon">🏠</span> Dashboard</a></li>
+        <li><a href="add-transaction.html" class="nav-item"><span class="icon">➕</span> Add Transaction</a></li>
+        <li><a href="history.html" class="nav-item"><span class="icon">📜</span> History</a></li>
+        <li><a href="reports.html" class="nav-item"><span class="icon">📊</span> Reports</a></li>
+        <li><a href="assistant.html" class="nav-item"><span class="icon">🤖</span> AI Assistant</a></li>
+        <li><a href="settings.html" class="nav-item"><span class="icon">⚙️</span> Settings</a></li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Your financial overview at a glance.</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Current Balance</div>
+          <div class="stat-value" id="balanceStat">₹0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Income</div>
+          <div class="stat-value positive" id="incomeStat">₹0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Expenses</div>
+          <div class="stat-value negative" id="expenseStat">₹0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h2 style="font-size:16px; font-weight:600;">Recent Transactions</h2>
+          <a href="history.html" style="font-size:13px; color:var(--indigo); font-weight:600;">View all →</a>
+        </div>
+        <table class="txn-table" id="recentTable">
+          <thead>
+            <tr><th>Description</th><th>Category</th><th>Date</th><th style="text-align:right;">Amount</th></tr>
+          </thead>
+          <tbody id="recentBody"></tbody>
+        </table>
+        <p class="empty-state" id="emptyState" style="display:none;">No transactions yet. <a href="add-transaction.html" style="color:var(--indigo); font-weight:600;">Add your first one →</a></p>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    function currency() {
+      return getSettings().currency || "₹";
+    }
+
+    function renderDashboard() {
+      const cur = currency();
+      const balance = getBalance();
+      const income = getTotalIncome();
+      const expense = getTotalExpenses();
+
+      document.getElementById("balanceStat").textContent = `${cur}${balance.toLocaleString("en-IN")}`;
+      document.getElementById("balanceStat").className = "stat-value " + (balance >= 0 ? "positive" : "negative");
+      document.getElementById("incomeStat").textContent = `${cur}${income.toLocaleString("en-IN")}`;
+      document.getElementById("expenseStat").textContent = `${cur}${expense.toLocaleString("en-IN")}`;
+
+      const transactions = getTransactions()
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 6);
+
+      const body = document.getElementById("recentBody");
+      const empty = document.getElementById("emptyState");
+      body.innerHTML = "";
+
+      if (transactions.length === 0) {
+        empty.style.display = "block";
+        return;
+      }
+      empty.style.display = "none";
+
+      transactions.forEach(t => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${escapeHTML(t.description)}</td>
+          <td><span class="badge badge-${t.type}">${escapeHTML(t.category)}</span></td>
+          <td>${t.date}</td>
+          <td style="text-align:right;" class="amount-${t.type}">${t.type === "income" ? "+" : "-"}${cur}${t.amount.toLocaleString("en-IN")}</td>
+        `;
+        body.appendChild(row);
+      });
+    }
+
+    function escapeHTML(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // Apply dark mode if saved
+    if (getSettings().darkMode) document.documentElement.setAttribute("data-theme", "dark");
+
+    renderDashboard();
+  </script>
+
+</body>
+</html>

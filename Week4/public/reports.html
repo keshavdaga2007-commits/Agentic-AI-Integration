@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports — Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">Finance<span>Tracker</span></div>
+      <ul class="nav-list">
+        <li><a href="dashboard.html" class="nav-item"><span class="icon">🏠</span> Dashboard</a></li>
+        <li><a href="add-transaction.html" class="nav-item"><span class="icon">➕</span> Add Transaction</a></li>
+        <li><a href="history.html" class="nav-item"><span class="icon">📜</span> History</a></li>
+        <li><a href="reports.html" class="nav-item active"><span class="icon">📊</span> Reports</a></li>
+        <li><a href="assistant.html" class="nav-item"><span class="icon">🤖</span> AI Assistant</a></li>
+        <li><a href="settings.html" class="nav-item"><span class="icon">⚙️</span> Settings</a></li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <div class="page-header">
+        <h1>Reports</h1>
+        <p>Visualise your spending and get AI-powered insights.</p>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size:16px; font-weight:600; margin-bottom:16px;">Spending by Category</h2>
+        <div id="chartWrap" style="max-width:340px; margin:0 auto;">
+          <canvas id="categoryChart"></canvas>
+        </div>
+        <p class="empty-state" id="chartEmpty" style="display:none;">No expenses recorded yet. Add a transaction to see your breakdown.</p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h2 style="font-size:16px; font-weight:600; margin-bottom:4px;">AI Spending Insights</h2>
+            <p style="font-size:13px; color:var(--gray-600);">Get personalised tips based on your actual spending pattern.</p>
+          </div>
+          <button class="btn btn-primary" id="insightBtn" onclick="getInsights()">✨ Generate Insights</button>
+        </div>
+        <div id="insightBox" class="ai-insight-box" style="display:none;"></div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ai.js"></script>
+  <script>
+    if (getSettings().darkMode) document.documentElement.setAttribute("data-theme", "dark");
+
+    const totals = getCategoryTotals();
+    const labels = Object.keys(totals);
+    const values = Object.values(totals);
+
+    if (labels.length === 0) {
+      document.getElementById("chartWrap").style.display = "none";
+      document.getElementById("chartEmpty").style.display = "block";
+    } else {
+      new Chart(document.getElementById("categoryChart"), {
+        type: "doughnut",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: ["#4f46e5", "#16a34a", "#d97706", "#dc2626", "#0891b2", "#9333ea", "#db2777", "#65a30d", "#0284c7", "#ea580c"],
+            borderWidth: 0,
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { position: "bottom", labels: { font: { family: "DM Sans", size: 12 }, padding: 14 } }
+          }
+        }
+      });
+    }
+
+    async function getInsights() {
+      const btn = document.getElementById("insightBtn");
+      const box = document.getElementById("insightBox");
+
+      const totals = getCategoryTotals();
+      const balance = getBalance();
+      const income = getTotalIncome();
+      const expenses = getTotalExpenses();
+
+      if (Object.keys(totals).length === 0) {
+        box.style.display = "block";
+        box.textContent = "Add a few transactions first so I have something to analyse.";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Analysing...";
+      box.style.display = "block";
+      box.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
+
+      const prompt = `I am tracking my personal finances. My total income is ₹${income}, total expenses are ₹${expenses}, and my current balance is ₹${balance}. 
+My spending by category is: ${JSON.stringify(totals)}.
+Give me 3 short, specific, actionable tips to help me save more money based on this data. Keep it concise, use plain language, and format as a short numbered list.`;
+
+      const reply = await askAI(prompt);
+
+      box.textContent = reply;
+      btn.disabled = false;
+      btn.textContent = "✨ Generate Insights";
+    }
+  </script>
+
+</body>
+</html>
